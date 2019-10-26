@@ -26,20 +26,20 @@ public class NumericTextBox
 	 * Note that the number of possible cursor positions is greater by one than
 	 * the length of the text box.
 	 */
-	private /*@ spec_public @*/ int cursorPosition;
+	private /*@spec_public@*/ int cursorPosition;
 
 	/**
 	 * This array stores the contents of the text box. At every position
 	 * before the cursor, there is a valid value (i.e. a single digit).
 	 * Positions after the cursor must be EMPTY.
 	 */
-	private /*@ spec_public @*/ int[] content;
+	private /*@spec_public@*/ int[] content;
 
 	/**
 	 * Holds the current TextBoxRenderer. This can be null, which means that there
 	 * is no renderer assigned.
 	 */
-	private /*@ spec_public @*/ TextBoxRenderer textBoxRenderer;
+	private /*@spec_public@*/ TextBoxRenderer textBoxRenderer;
 
 	/*@ 
       private invariant 
@@ -48,12 +48,12 @@ public class NumericTextBox
 
 	/*@ 
       private invariant 
-         \forall int i; i >= 0 && i < cursorPosition ; (\exists int n; content[i] == n);
+         (\forall int i; i >= 0 && i < cursorPosition ; (\exists int n; content[i] == n));
 	@*/ 
 
 	/*@ 
       private invariant 
-         \forall int i; i < content.length && i > cursorPosition ; content[i] == EMPTY;
+         (\forall int i; i < content.length && i > cursorPosition ; content[i] == EMPTY);
 	@*/ 
 
 	/**
@@ -91,14 +91,14 @@ public class NumericTextBox
 	 */
 
 	/*@ public normal_behavior
-	@ requires (\exist int n; n >= 0 && n < 10; n == input);
+	@ requires (\exists int n; n >= 0 && n < 10; n == input);
 	@ ensures \result == true;
 	@ assignable \nothing;
 	@
 	@ also
 	@
 	@ public normal_behaviour
-	@ requires !(\exist int n; n >= 0 && n < 10; n == input);
+	@ requires !(\exists int n; n >= 0 && n < 10; n == input);
 	@ ensures \result == false;
 	@ assignable \nothing;
 	@*/
@@ -115,7 +115,7 @@ public class NumericTextBox
 
 	/*@ public normal_behavior
 	@ ensures cursorPosition == 0;
-	@ ensures (\forall int i; i >= 0 &6 i < content.length; content[i] == EMPTY);
+	@ ensures (\forall int i; i >= 0 && i < content.length; content[i] == EMPTY);
 	@ assignable content, cursorPosition;
 	@
 	@ also
@@ -144,22 +144,22 @@ public class NumericTextBox
 	 */
 
 	/*@ public normal_behavior
-	@ requires isSingleDigit(input) == true;
+	@ requires (\exists int n; n >= 0 && n < 10; n == input);
 	@ requires cursorPosition < content.length;
-	@ ensures content[\old(cursorPosition)] == input:
-	@ ensures cursorPosition == \old(cursorPosition) +1;
+	@ ensures content[\old(cursorPosition)] == input;
+	@ ensures cursorPosition == \old(cursorPosition) + 1;
 	@ ensures textBoxRenderer.contentChanged == true;
-	@ assignable content[\old(cursorPosition)], cursorPosition, textBoxRenderer.contentChanged;
+	@ assignable content[(cursorPosition - 1)], cursorPosition, textBoxRenderer.contentChanged;
 	@ 
 	@ also
 	@ 
 	@ public exceptional_behaviour
-	@ requires isSingleDigit(input) == false;
+	@ requires !(\exists int n; n >= 0 && n < 10; n == input);
 	@ signals_only IllegalArgumentException;
 	@ signals (IllegalArgumentException) cursorPosition == \old(cursorPosition);
 	@ signals (IllegalArgumentException) content[\old(cursorPosition)] == content[cursorPosition];
 	@ signals (IllegalArgumentException) textBoxRenderer.contentChanged == false;
-	@ signals (IllegalArgumentException) textBoxRenderer.showError = true;
+	@ signals (IllegalArgumentException) textBoxRenderer.showError == true;
 	@ assignable textBoxRenderer.showError;
 	@
 	@ also
@@ -169,7 +169,7 @@ public class NumericTextBox
 	@ signals_only RuntimeException;
 	@ signals (RuntimeException) cursorPosition == \old(cursorPosition);
 	@ signals (RuntimeException) textBoxRenderer.contentChanged == false;
-	@ signals (RuntimeException) textBoxRenderer.showError = true;
+	@ signals (RuntimeException) textBoxRenderer.showError == true;
 	@ assignable textBoxRenderer.showError;
 	@
 	@*/
@@ -189,21 +189,21 @@ public class NumericTextBox
 
 	/*@ public normal_behavior
 	@ requires cursorPosition != 0;
-	@ ensures content[\old(cursorPosition)] == EMPTY:
+	@ ensures content[\old(cursorPosition)] == EMPTY;
 	@ ensures cursorPosition == \old(cursorPosition) - 1;
 	@ ensures textBoxRenderer.contentChanged == true;
-	@ assignable content[\old(cursorPosition)], cursorPosition, textBoxRenderer.contentChanged;
+	@ assignable content[cursorPosition + 1], cursorPosition, textBoxRenderer.contentChanged;
 	@ 
 	@ also
 	@ 
 	@ public exceptional_behaviour
 	@ requires cursorPosition == 0;
-	@ requires textBoxRenderer.showError = true;
+	@ requires textBoxRenderer.showError == true;
 	@ signals_only RuntimeException;
 	@ signals (RuntimeException) cursorPosition == \old(cursorPosition);
 	@ signals (RuntimeException) content[\old(cursorPosition)] == content[cursorPosition];
 	@ signals (RuntimeException) textBoxRenderer.contentChanged == false;
-	@ signals (RuntimeException) textBoxRenderer.showError = true;
+	@ signals (RuntimeException) textBoxRenderer.showError == true;
 	@
 	@*/
 	public void backspace()
