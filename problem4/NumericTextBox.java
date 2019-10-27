@@ -235,15 +235,14 @@ public class NumericTextBox
 	/*@ public normal_behavior
 	@ requires cursorPosition > 0;
 	@ requires cursorPosition < this.content.length;
+	@ ensures this.textBoxRenderer != null ==> this.textBoxRenderer.contentChanged == true;
 	@ ensures content[\old(cursorPosition)] == EMPTY;
 	@ ensures cursorPosition == \old(cursorPosition) - 1;
-	@ ensures this.textBoxRenderer != null ==> this.textBoxRenderer.contentChanged == true;
-	@ assignable content[cursorPosition + 1], cursorPosition, this.textBoxRenderer.contentChanged;
+	@ assignable content[*], cursorPosition, this.textBoxRenderer.contentChanged;
 	@
-	@ also
-	@ 
 	@ public exceptional_behaviour
-	@ requires cursorPosition == 0 && this.textBoxRenderer != null;
+	@ requires cursorPosition == 0;
+	@ requires this.textBoxRenderer != null;
 	@ signals_only RuntimeException;
 	@ signals (RuntimeException) cursorPosition == \old(cursorPosition);
 	@ signals (RuntimeException) content[\old(cursorPosition)] == content[cursorPosition];
@@ -253,11 +252,11 @@ public class NumericTextBox
 	@ also
 	@
 	@ public exceptional_behaviour
-	@ requires cursorPosition == 0 && this.textBoxRenderer == null;
+	@ requires cursorPosition == 0;
+	@ requires this.textBoxRenderer == null;
 	@ signals_only RuntimeException;
 	@ signals (RuntimeException) cursorPosition == \old(cursorPosition);
 	@ signals (RuntimeException) content[\old(cursorPosition)] == content[cursorPosition];
-	@ signals (RuntimeException) textBoxRenderer == null;
 	@
 
 	@*/
