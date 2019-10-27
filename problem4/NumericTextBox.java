@@ -39,7 +39,7 @@ public class NumericTextBox
 	 * Holds the current TextBoxRenderer. This can be null, which means that there
 	 * is no renderer assigned.
 	 */
-    private /*@spec_public \nullable @*/ TextBoxRenderer textBoxRenderer;
+    private /*@spec_public \nullable @*/ TextBoxRenderer textBoxRenderer = null;
 
 	/*@ public invariant 
 	  @ cursorPosition >= 0 && cursorPosition <= content.length + 1;
@@ -73,7 +73,7 @@ public class NumericTextBox
 
 	/*@ public normal_behavior
 	@ ensures this.textBoxRenderer == renderer;
-	@ assignable textBoxRenderer;
+	@ assignable this.textBoxRenderer;
 	@*/
 	public void setRenderer(TextBoxRenderer renderer)
 	{
@@ -170,7 +170,7 @@ public class NumericTextBox
 	@ signals (IllegalArgumentException) content[\old(cursorPosition)] == content[cursorPosition];
 	@ signals (IllegalArgumentException) this.textBoxRenderer != null ==> !this.textBoxRenderer.contentChanged;
 	@ signals (IllegalArgumentException) this.textBoxRenderer != null ==> this.textBoxRenderer.showError;
-	@ assignable content[*], this.textBoxRenderer.showError, this.textBoxRenderer.contentChanged;
+	@ assignable this.textBoxRenderer.showError, this.textBoxRenderer.contentChanged;
 	@
 	@ also
 	@ 
@@ -181,7 +181,6 @@ public class NumericTextBox
 	@ signals (RuntimeException) cursorPosition == \old(cursorPosition);
 	@ signals (RuntimeException) this.textBoxRenderer != null ==> !this.textBoxRenderer.contentChanged;
 	@ signals (RuntimeException) this.textBoxRenderer != null ==> this.textBoxRenderer.showError;
-	@ assignable content[*], this.textBoxRenderer.showError, this.textBoxRenderer.contentChanged;
 	@ assignable this.textBoxRenderer.showError, this.textBoxRenderer.contentChanged;
 	@
 	@*/
@@ -191,7 +190,7 @@ public class NumericTextBox
 			if (!isSingleDigit(input)) {
 				throw new IllegalArgumentException();
 			}
-			else if (this.cursorPosition == this.content.length) {
+			else if (this.cursorPosition >= this.content.length) {
 				throw new RuntimeException();
 			}
 			else {
@@ -206,6 +205,7 @@ public class NumericTextBox
 				this.textBoxRenderer.showError = true;
 				this.textBoxRenderer.contentChanged = false;
 			}
+			throw e;
 		}
 
 	}
