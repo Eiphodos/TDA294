@@ -119,17 +119,9 @@ public class NumericTextBox
 	  @ requires textBoxRenderer == null;
 	@ ensures cursorPosition == 0;
 	@ ensures (\forall int i; i >= 0 && i < content.length; content[i] == EMPTY);
+	@ ensures this.textBoxRenderer != null ==> this.textBoxRenderer.contentChanged;
 	@ assignable content[*], cursorPosition, this.textBoxRenderer.contentChanged;
-	@ diverges false;
 	@
-	@ also
-	@
-	@ public normal_behaviour
-	@ requires this.textBoxRenderer != null;
-	@ ensures cursorPosition == 0;
-	@ ensures (\forall int i; i >= 0 && i < content.length; content[i] == EMPTY);
-	@ ensures this.textBoxRenderer.contentChanged == true;
-	@ assignable this.textBoxRenderer.contentChanged, content;
 	@*/
 	public void clear()
 	{
@@ -166,16 +158,9 @@ public class NumericTextBox
 	@ requires cursorPosition < content.length;
 	@ ensures content[\old(cursorPosition)] == input;
 	@ ensures cursorPosition == \old(cursorPosition) + 1;
-	@ ensures this.textBoxRenderer.contentChanged == true;
-	@ assignable content[(cursorPosition - 1)], cursorPosition, this.textBoxRenderer.contentChanged;
+	@ ensures this.textBoxRenderer != null ==> this.textBoxRenderer.contentChanged;
+	@ assignable content[*], cursorPosition, this.textBoxRenderer.contentChanged;
 	@ 
-	@ also
-	@
-	@ public normal_behaviour
-	@ requires textBoxRenderer != null;
-	@ ensures textBoxRenderer.contentChanged == true;
-	@ assignable textBoxRenderer.contentChanged;
-	@
 	@ also
 	@ 
 	@ public exceptional_behaviour
@@ -184,8 +169,8 @@ public class NumericTextBox
 	@ signals (IllegalArgumentException) cursorPosition == \old(cursorPosition);
 	@ signals (IllegalArgumentException) content[\old(cursorPosition)] == content[cursorPosition];
 	@ signals (IllegalArgumentException) this.textBoxRenderer.contentChanged == false;
-	@ signals (IllegalArgumentException) this.textBoxRenderer.showError == true;
-	@ assignable this.textBoxRenderer.showError;
+	@ signals (IllegalArgumentException) this.textBoxRenderer.showError;
+	@ assignable content[*], this.textBoxRenderer.showError;
 	@
 	@ also
 	@ 
@@ -195,7 +180,7 @@ public class NumericTextBox
 	@ signals_only RuntimeException;
 	@ signals (RuntimeException) cursorPosition == \old(cursorPosition);
 	@ signals (RuntimeException) this.textBoxRenderer.contentChanged == false;
-	@ signals (RuntimeException) this.textBoxRenderer.showError == true;
+	@ signals (RuntimeException) this.textBoxRenderer.showError;
 	@ assignable this.textBoxRenderer.showError;
 	@
 	@*/
