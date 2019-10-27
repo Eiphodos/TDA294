@@ -58,7 +58,7 @@ public class NumericTextBox
 	 */
 
 	/*@ public normal_behavior
-	@ ensures \result == textBoxRenderer;
+	@ ensures \result == this.textBoxRenderer;
 	@ assignable \nothing;
 	@*/
 	public /*@ spec_public strictly_pure @*/ TextBoxRenderer getRenderer()
@@ -72,7 +72,7 @@ public class NumericTextBox
 	 */
 
 	/*@ public normal_behavior
-	@ ensures textBoxRenderer == renderer;
+	@ ensures this.textBoxRenderer == renderer;
 	@ assignable textBoxRenderer;
 	@*/
 	public void setRenderer(TextBoxRenderer renderer)
@@ -168,9 +168,9 @@ public class NumericTextBox
 	@ signals_only IllegalArgumentException;
 	@ signals (IllegalArgumentException) cursorPosition == \old(cursorPosition);
 	@ signals (IllegalArgumentException) content[\old(cursorPosition)] == content[cursorPosition];
-	@ signals (IllegalArgumentException) this.textBoxRenderer.contentChanged == false;
-	@ signals (IllegalArgumentException) this.textBoxRenderer.showError;
-	@ assignable content[*], this.textBoxRenderer.showError;
+	@ signals (IllegalArgumentException) this.textBoxRenderer != null ==> !this.textBoxRenderer.contentChanged;
+	@ signals (IllegalArgumentException) this.textBoxRenderer != null ==> this.textBoxRenderer.showError;
+	@ assignable content[*], this.textBoxRenderer.showError, this.textBoxRenderer.contentChanged;
 	@
 	@ also
 	@ 
@@ -179,9 +179,10 @@ public class NumericTextBox
 	@ requires input < 10 && input >= 0;
 	@ signals_only RuntimeException;
 	@ signals (RuntimeException) cursorPosition == \old(cursorPosition);
-	@ signals (RuntimeException) this.textBoxRenderer.contentChanged == false;
-	@ signals (RuntimeException) this.textBoxRenderer.showError;
-	@ assignable this.textBoxRenderer.showError;
+	@ signals (RuntimeException) this.textBoxRenderer != null ==> !this.textBoxRenderer.contentChanged;
+	@ signals (RuntimeException) this.textBoxRenderer != null ==> this.textBoxRenderer.showError;
+	@ assignable content[*], this.textBoxRenderer.showError, this.textBoxRenderer.contentChanged;
+	@ assignable this.textBoxRenderer.showError, this.textBoxRenderer.contentChanged;
 	@
 	@*/
 	public void enterCharacter(int input)
@@ -203,6 +204,7 @@ public class NumericTextBox
 		} catch (Exception e) {
 			if (this.textBoxRenderer != null) {
 				this.textBoxRenderer.showError = true;
+				this.textBoxRenderer.contentChanged = false;
 			}
 		}
 
