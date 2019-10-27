@@ -122,7 +122,7 @@ public class NumericTextBox
 	  @ requires textBoxRenderer == null;
 	@ ensures cursorPosition == 0;
 	@ ensures (\forall int i; i >= 0 && i < content.length; content[i] == EMPTY);
-	@ assignable content[Ä], cursorPosition, this.textBoxRenderer.contentChanged;
+	@ assignable content[*], cursorPosition, this.textBoxRenderer.contentChanged;
 	@ diverges false;
 	@
 	@ also
