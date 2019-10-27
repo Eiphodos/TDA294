@@ -121,7 +121,8 @@ public class NumericTextBox
 	/*@ public normal_behavior
 	@ ensures cursorPosition == 0;
 	@ ensures (\forall int i; i >= 0 && i < content.length; content[i] == EMPTY);
-	@ assignable content, cursorPosition;
+	@ diverges false;
+	@ assignable content[*], cursorPosition;
 	@
 	@ also
 	@
@@ -133,9 +134,9 @@ public class NumericTextBox
 	public void clear()
 	{
 		/*@ loop_invariant
-		@ i >= 0 &&
+		@ i >= 0 && i <= this.content.length &&
 		@ (\forall int j; j >= 0 && j < i; content[j] == EMPTY);
-		@ decreases content.length - i;
+		@ decreases (content.length - i);
 		@ assignable content[*];
 		@*/
 		for (int i = 0; i < this.content.length; i++) {
@@ -165,9 +166,15 @@ public class NumericTextBox
 	@ requires cursorPosition < content.length;
 	@ ensures content[\old(cursorPosition)] == input;
 	@ ensures cursorPosition == \old(cursorPosition) + 1;
-	@ ensures textBoxRenderer.contentChanged == true;
-	@ assignable content[(cursorPosition - 1)], cursorPosition, textBoxRenderer.contentChanged;
+	@ assignable content[(cursorPosition - 1)], cursorPosition;
 	@ 
+	@ also
+	@
+	@ public normal_behaviour
+	@ requires textBoxRenderer != null;
+	@ ensures textBoxRenderer.contentChanged == true;
+	@ assignable textBoxRenderer.contentChanged;
+	@
 	@ also
 	@ 
 	@ public exceptional_behaviour
@@ -227,14 +234,19 @@ public class NumericTextBox
 	@ requires cursorPosition != 0;
 	@ ensures content[\old(cursorPosition)] == EMPTY;
 	@ ensures cursorPosition == \old(cursorPosition) - 1;
-	@ ensures textBoxRenderer.contentChanged == true;
-	@ assignable content[cursorPosition + 1], cursorPosition, textBoxRenderer.contentChanged;
+	@ assignable content[cursorPosition + 1], cursorPosition;
 	@ 
+	@ also
+	@
+	@ public normal_behaviour
+	@ requires textBoxRenderer != null;
+	@ ensures textBoxRenderer.contentChanged == true;
+	@ assignable textBoxRenderer.contentChanged;
+	@
 	@ also
 	@ 
 	@ public exceptional_behaviour
 	@ requires cursorPosition == 0;
-	@ requires textBoxRenderer.showError == true;
 	@ signals_only RuntimeException;
 	@ signals (RuntimeException) cursorPosition == \old(cursorPosition);
 	@ signals (RuntimeException) content[\old(cursorPosition)] == content[cursorPosition];
