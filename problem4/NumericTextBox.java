@@ -39,20 +39,13 @@ public class NumericTextBox
 	 * Holds the current TextBoxRenderer. This can be null, which means that there
 	 * is no renderer assigned.
 	 */
-	private /*@spec_public@*/ TextBoxRenderer textBoxRenderer;
+    private /*@spec_public \nullable @*/ TextBoxRenderer textBoxRenderer;
 
-	/*@ 
-      public invariant 
-         cursorPosition >= 0 && cursorPosition <= content.length + 1;
+	/*@ public invariant 
+	  cursorPosition >= 0 && cursorPosition <= content.length + 1;
 	@*/   
 
-	/*@ 
-      private invariant 
-         (\forall int i; i >= 0 && i < cursorPosition ; (\exists int n; content[i] == n));
-	@*/ 
-
-	/*@ 
-      private invariant 
+	/*@ private invariant 
          (\forall int i; i < content.length && i > cursorPosition ; content[i] == EMPTY);
 	@*/ 
 
@@ -143,7 +136,7 @@ public class NumericTextBox
 		@ assignable content[*];
 		@*/
 		for (int i = 0; i < this.content.length; i++) {
-			this.content[i] = this.EMPTY;
+			this.content[i] = EMPTY;
 		}
 		this.cursorPosition = 0;
 		if (this.textBoxRenderer != null) {
@@ -194,6 +187,7 @@ public class NumericTextBox
 	@ 
 	@ public exceptional_behaviour
 	@ requires cursorPosition >= content.length;
+	@ requires isSingleDigit(input);
 	@ signals_only RuntimeException;
 	@ signals (RuntimeException) cursorPosition == \old(cursorPosition);
 	@ signals (RuntimeException) this.textBoxRenderer.contentChanged == false;
