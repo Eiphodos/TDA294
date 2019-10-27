@@ -49,7 +49,7 @@ public class NumericTextBox
       @ (\forall int i; 0 <= i && i < cursorPosition; (content[i] < 10 && content[i] >= 0));
       @*/
     
-    /*@ private invariant 
+    /*@ public invariant 
       @ (\forall int i; i < content.length && i > cursorPosition ; content[i] == EMPTY);
       @*/ 
     
@@ -61,9 +61,9 @@ public class NumericTextBox
 	@ ensures \result == this.textBoxRenderer;
 	@ assignable \nothing;
 	@*/
-	public /*@ spec_public strictly_pure @*/ TextBoxRenderer getRenderer()
+    public /*@ spec_public strictly_pure \nullable @*/ TextBoxRenderer getRenderer()
 	{
-		return this.textBoxRenderer;
+	    return this.textBoxRenderer;
 	}
 
 	/**
