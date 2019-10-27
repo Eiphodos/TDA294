@@ -122,7 +122,8 @@ public class NumericTextBox
 	  @ requires textBoxRenderer == null;
 	@ ensures cursorPosition == 0;
 	@ ensures (\forall int i; i >= 0 && i < content.length; content[i] == EMPTY);
-	@ assignable content, cursorPosition, this.textBoxRenderer.contentChanged;
+	@ assignable content[Ä], cursorPosition, this.textBoxRenderer.contentChanged;
+	@ diverges false;
 	@
 	@ also
 	@
@@ -136,9 +137,9 @@ public class NumericTextBox
 	public void clear()
 	{
 		/*@ loop_invariant
-		@ i >= 0 &&
+		@ i >= 0 && i <= this.content.length &&
 		@ (\forall int j; j >= 0 && j < i; content[j] == EMPTY);
-		@ decreases content.length - i;
+		@ decreases (content.length - i);
 		@ assignable content[*];
 		@*/
 		for (int i = 0; i < this.content.length; i++) {
@@ -171,6 +172,13 @@ public class NumericTextBox
 	@ ensures this.textBoxRenderer.contentChanged == true;
 	@ assignable content[(cursorPosition - 1)], cursorPosition, this.textBoxRenderer.contentChanged;
 	@ 
+	@ also
+	@
+	@ public normal_behaviour
+	@ requires textBoxRenderer != null;
+	@ ensures textBoxRenderer.contentChanged == true;
+	@ assignable textBoxRenderer.contentChanged;
+	@
 	@ also
 	@ 
 	@ public exceptional_behaviour
@@ -234,6 +242,13 @@ public class NumericTextBox
 	@ ensures \old(this.textBoxRenderer) != null ==> this.textBoxRenderer.contentChanged == true;
 	@ assignable content[cursorPosition + 1], cursorPosition, this.textBoxRenderer.contentChanged;
 	@ 
+	@ also
+	@
+	@ public normal_behaviour
+	@ requires textBoxRenderer != null;
+	@ ensures textBoxRenderer.contentChanged == true;
+	@ assignable textBoxRenderer.contentChanged;
+	@
 	@ also
 	@ 
 	@ public exceptional_behaviour
