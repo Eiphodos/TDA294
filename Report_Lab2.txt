@@ -1,0 +1,38 @@
+Problem 3.1:
+
+Problem 3.2:
+
+The exceptional behaviour specification specified that a RuntimeException should be thrown if the numbers array
+existed but had zero length. It also required the private field size to be set to -1 in that case. 
+A simple if/else clause was added that checked for those requirements and if they were fulfilled, size was set
+to -1 and the exception thrown. If not, normal excecution of the method followed.
+
+Problem 3.3a:
+
+Problem 3.3b:
+
+It was easy to see in the code that if the loop invariant only specified "i < canvas[depth].length", "x < i" and
+"canvas[depth][x] == true" then "canvas[depth][canvas[depth].length - 1]" is not garantueed to be true.
+Changing the loop invariant to ""i <= canvas[depth].length" solves that problem and is correct as i will be
+incremented to "canvas[depth].length" before the loop is finished.
+
+Problem 4:
+
+The private fields was declared public for our specifications so that we could refer to them without helper functions.
+The field textBoxRenderer and the method getRenderer were both specified as nullable as they could be null.
+
+Three different public invariants was created, one for specifying where the cursor could be, one that said that the content
+could only hold single digits and one that specified that everything after the cursor was EMPTY. These must be true before
+and after each method call but can be false inside methods. 
+
+Before each method JML specifications for one or more normal and exceptional behaviours was then added, fulfilling the
+informal specifications that was given in the comments. In general, they follow the same structure. We specify some kind of
+promise, such as the return value must be true or a specific exception must be thrown. Then we can list different 
+requirements for us to make that promise, similar to an implication. If the requirement is true then our promise holds,
+but if it is not, then we dont promise anything. Finally we also say something about what fields that our method might 
+change.
+
+For the implementation of the different methods, we used both the informal specifications in the comments together with 
+our JML specifications to create the correct implementations. The informal specifications was used in the sense of 
+describing what our method should do, for example enter a character at the cursor position. The formal JML specifications
+was together with that in a sense just converted to normal Java code.

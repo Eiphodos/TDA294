@@ -44,7 +44,7 @@ public class Drawing{
 	  @ 0 <= i && i <= canvas[depth].length
 	  @        && (\forall int x; 0 <= x && x < i; canvas[depth][x] == true);
 	  @ assignable canvas[depth][*];
-	  @ decreases (canvas[depth].length) - i;
+	  @ decreasing (canvas[depth].length) - i;
 	  @*/
 	while(i < canvas[depth].length){		
 	    canvas[depth][i] = true;
