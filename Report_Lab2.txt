@@ -1,38 +1,104 @@
-Problem 3.1:
+-- 
 
-Problem 3.2:
+---- Problem 3.1:
 
-The exceptional behaviour specification specified that a RuntimeException should be thrown if the numbers array
-existed but had zero length. It also required the private field size to be set to -1 in that case. 
-A simple if/else clause was added that checked for those requirements and if they were fulfilled, size was set
-to -1 and the exception thrown. If not, normal excecution of the method followed.
 
-Problem 3.3a:
+Entirely automatic verification was not possible here. However, a few
+tricks (and an approach that might be described at best as
+experimental) turned out to help guide KeY sufficiently:
 
-Problem 3.3b:
+* using the method body of report (Method Call), as the possibly
+  useful guarantee was already assumed.
 
-It was easy to see in the code that if the loop invariant only specified "i < canvas[depth].length", "x < i" and
-"canvas[depth][x] == true" then "canvas[depth][canvas[depth].length - 1]" is not garantueed to be true.
-Changing the loop invariant to ""i <= canvas[depth].length" solves that problem and is correct as i will be
+* otherwise using method contracts, both for our methods and
+  java-generated exception cases.
+
+* performing explicit splits of the proof after a point, and guiding
+  the instantiation by pointing to specific sequents (eg instantiating
+  \forall:s strategically).
+
+* explicitly adding sequents by instantiating RHS identities using the
+  heap-equalities to guide the prover. Eg wellFormed(anon_heap...) on
+  the LHS, wellFormed(heapAfter_*) on the RHS and some identity
+  involving the latter. Qualitatively, it seems that we are helping
+  the prover connect post- and pre-states of functions using
+  (consequences of) the method-contract postconditions that it was
+  able to infer.
+
+* using the sortedness property .
+
+
+
+---- Problem 3.2:
+
+The exceptional behaviour specification specified that a
+RuntimeException should be thrown if the numbers array existed but had
+zero length. It also required the private field size to be set to -1
+in that case.  A simple if/else clause was added that checked for
+those requirements and if they were fulfilled, size was set to -1 and
+the exception thrown. If not, normal excecution of the method
+followed.
+
+-- Problem 3.3a:
+
+
+-- Problem 3.3b:
+
+It was easy to see in the code that if the loop invariant only
+specified "i < canvas[depth].length", "x < i" and "canvas[depth][x] ==
+true" then "canvas[depth][canvas[depth].length - 1]" is not garantueed
+to be true.  Changing the loop invariant to ""i <=
+canvas[depth].length" solves that problem and is correct as i will be
 incremented to "canvas[depth].length" before the loop is finished.
 
-Problem 4:
+---- Problem 4
 
-The private fields was declared public for our specifications so that we could refer to them without helper functions.
-The field textBoxRenderer and the method getRenderer were both specified as nullable as they could be null.
+The private fields was declared public for our specifications so that
+we could refer to them without helper functions.  The field
+textBoxRenderer and the method getRenderer were both specified as
+nullable as they could be null. This default setting of KeY turned out
+to be problematic to miss (esp for the method declaration). 
 
-Three different public invariants was created, one for specifying where the cursor could be, one that said that the content
-could only hold single digits and one that specified that everything after the cursor was EMPTY. These must be true before
-and after each method call but can be false inside methods. 
+Three different public invariants was created, one for specifying
+where the cursor could be, one that said that the content could only
+hold single digits and one that specified that everything after the
+cursor was EMPTY. These must be true before and after each method call
+but can be false inside methods.
 
-Before each method JML specifications for one or more normal and exceptional behaviours was then added, fulfilling the
-informal specifications that was given in the comments. In general, they follow the same structure. We specify some kind of
-promise, such as the return value must be true or a specific exception must be thrown. Then we can list different 
-requirements for us to make that promise, similar to an implication. If the requirement is true then our promise holds,
-but if it is not, then we dont promise anything. Finally we also say something about what fields that our method might 
-change.
+Before each method JML specifications for one or more normal and
+exceptional behaviours was then added, fulfilling the informal
+specifications that was given in the comments. In general, they follow
+the same structure. We specify some kind of promise, such as the
+return value must be true or a specific exception must be thrown. Then
+we can list different requirements for us to make that promise,
+similar to an implication. If the requirement is true then our promise
+holds, but if it is not, then we dont promise anything. Finally we
+also say something about what fields that our method might change.
 
-For the implementation of the different methods, we used both the informal specifications in the comments together with 
-our JML specifications to create the correct implementations. The informal specifications was used in the sense of 
-describing what our method should do, for example enter a character at the cursor position. The formal JML specifications
-was together with that in a sense just converted to normal Java code.
+For ease of automatic verification, these were at times sligthly
+overapproximated (ie content[*] instead of content[specificIndex]). A
+separate question is whether to provide separate contracts for the
+normal behaviour cases where the textBoxRenderer is null, and where it
+is non-null. The only advantage in the latter would appear to be fewer
+steps in unguided verification. It turned out that incorporating the
+differing behaviours in an implication among the ensures didn't make
+verification impossible, and this is now the case. 
+
+For the implementation of the different methods, we used both the
+informal specifications in the comments together with our JML
+specifications to create the correct implementations. The informal
+specifications was used in the sense of describing what our method
+should do, for example enter a character at the cursor position. The
+formal JML specifications was together with that in a sense just
+converted to normal Java code. At times, additional meaning was read
+into vague natural-language specifications. In partciular, we read the
+language about TextBoxError flags to intend that if content wasn't
+changed then the contentChanged flag should be set to false (and
+introduced first a postcondition for this, and then the actual
+implementation). It could have been read as the state of this boolean
+being indeterminate (whereas there is an explicit requirement for the
+error flag to be set).
+
+After testing this, and producing a syntax-matching
+"this.textBoxRenderer" among the conditions, verification was entirely
+unguided.
