@@ -2,7 +2,6 @@
 
 ---- Problem 3.1:
 
-
 Entirely automatic verification was not possible here. However, a few
 tricks (and an approach that might be described at best as
 experimental) turned out to help guide KeY sufficiently:
@@ -15,7 +14,7 @@ experimental) turned out to help guide KeY sufficiently:
 
 * performing explicit splits of the proof after a point, and guiding
   the instantiation by pointing to specific sequents (eg instantiating
-  \forall:s strategically).
+  \forall \exist \forall strategically).
 
 * explicitly adding sequents by instantiating RHS identities using the
   heap-equalities to guide the prover. Eg wellFormed(anon_heap...) on
@@ -25,8 +24,7 @@ experimental) turned out to help guide KeY sufficiently:
   (consequences of) the method-contract postconditions that it was
   able to infer.
 
-* using the sortedness property .
-
+* instantiating the sortedness property.
 
 
 ---- Problem 3.2:
@@ -41,6 +39,13 @@ followed.
 
 -- Problem 3.3a:
 
+Again, as a general sketch:
+
+* We used the method contracts extensively.
+
+* The heap substitution trick from task 3.1 was useful, as was
+  manually extracting the explicit invariants from LHS conjunctions
+  and on the RHS.
 
 -- Problem 3.3b:
 
