@@ -157,7 +157,7 @@ public class NumericTextBox
 	@ ensures content[\old(cursorPosition)] == input;
 	@ ensures cursorPosition == \old(cursorPosition) + 1;
 	@ ensures this.textBoxRenderer != null ==> this.textBoxRenderer.contentChanged;
-	@ assignable content[*], cursorPosition, this.textBoxRenderer.contentChanged;
+	@ assignable content[cursorPosition], cursorPosition, this.textBoxRenderer.contentChanged;
 	@ 
 	@ also
 	@ 
