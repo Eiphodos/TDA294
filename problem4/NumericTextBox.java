@@ -235,8 +235,6 @@ public class NumericTextBox
 	@ requires cursorPosition == 0;
 	@ requires this.textBoxRenderer == null;
 	@ signals_only RuntimeException;
-	@ signals (RuntimeException) cursorPosition == \old(cursorPosition);
-	@ signals (RuntimeException) content[\old(cursorPosition)] == content[cursorPosition];
 	@ assignable \nothing;
 	@
 
