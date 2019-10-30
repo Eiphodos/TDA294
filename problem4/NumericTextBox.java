@@ -42,7 +42,7 @@ public class NumericTextBox
     private /*@spec_public \nullable @*/ TextBoxRenderer textBoxRenderer = null;
 
 	/*@ public invariant 
-	  @ cursorPosition >= 0 && cursorPosition <= content.length + 1;
+	  @ cursorPosition >= 0 && cursorPosition <= content.length;
 	@*/   
 
     /*@ public invariant
@@ -50,7 +50,7 @@ public class NumericTextBox
       @*/
     
     /*@ public invariant 
-      @ (\forall int i; i < content.length && i > cursorPosition ; content[i] == EMPTY);
+      @ (\forall int i; i < content.length && i >= cursorPosition ; content[i] == EMPTY);
       @*/ 
     
 	/**
@@ -59,7 +59,6 @@ public class NumericTextBox
 
 	/*@ public normal_behavior
 	@ ensures \result == this.textBoxRenderer;
-	@ assignable \nothing;
 	@*/
     public /*@ spec_public strictly_pure \nullable @*/ TextBoxRenderer getRenderer()
 	{
@@ -116,7 +115,6 @@ public class NumericTextBox
 	 */
 
 	/*@ public normal_behavior
-	  @ requires textBoxRenderer == null;
 	@ ensures cursorPosition == 0;
 	@ ensures (\forall int i; i >= 0 && i < content.length; content[i] == EMPTY);
 	@ ensures this.textBoxRenderer != null ==> this.textBoxRenderer.contentChanged;
@@ -154,7 +152,7 @@ public class NumericTextBox
 	 */
 
 	/*@ public normal_behavior
-	@ requires (\exists int n; n >= 0 && n < 10; n == input);
+	@ requires isSingleDigit(input);
 	@ requires cursorPosition < content.length;
 	@ ensures content[\old(cursorPosition)] == input;
 	@ ensures cursorPosition == \old(cursorPosition) + 1;
@@ -166,8 +164,6 @@ public class NumericTextBox
 	@ public exceptional_behaviour
 	@ requires input > 9 || input < 0;
 	@ signals_only IllegalArgumentException;
-	@ signals (IllegalArgumentException) cursorPosition == \old(cursorPosition);
-	@ signals (IllegalArgumentException) content[\old(cursorPosition)] == content[cursorPosition];
 	@ signals (IllegalArgumentException) this.textBoxRenderer != null ==> !this.textBoxRenderer.contentChanged;
 	@ signals (IllegalArgumentException) this.textBoxRenderer != null ==> this.textBoxRenderer.showError;
 	@ assignable this.textBoxRenderer.showError, this.textBoxRenderer.contentChanged;
@@ -178,7 +174,6 @@ public class NumericTextBox
 	@ requires cursorPosition >= content.length;
 	@ requires input < 10 && input >= 0;
 	@ signals_only RuntimeException;
-	@ signals (RuntimeException) cursorPosition == \old(cursorPosition);
 	@ signals (RuntimeException) this.textBoxRenderer != null ==> !this.textBoxRenderer.contentChanged;
 	@ signals (RuntimeException) this.textBoxRenderer != null ==> this.textBoxRenderer.showError;
 	@ assignable this.textBoxRenderer.showError, this.textBoxRenderer.contentChanged;
@@ -221,20 +216,18 @@ public class NumericTextBox
 
 	/*@ public normal_behavior
 	@ requires cursorPosition > 0;
-	@ requires cursorPosition < this.content.length;
 	@ ensures this.textBoxRenderer != null ==> this.textBoxRenderer.contentChanged == true;
-	@ ensures content[\old(cursorPosition)] == EMPTY;
+	@ ensures content[cursorPosition] == EMPTY;
 	@ ensures cursorPosition == \old(cursorPosition) - 1;
-	@ assignable content[*], cursorPosition, this.textBoxRenderer.contentChanged;
+	@ assignable content[cursorPosition -1], cursorPosition, this.textBoxRenderer.contentChanged;
 	@
 	@ public exceptional_behaviour
 	@ requires cursorPosition == 0;
 	@ requires this.textBoxRenderer != null;
 	@ signals_only RuntimeException;
-	@ signals (RuntimeException) cursorPosition == \old(cursorPosition);
-	@ signals (RuntimeException) content[\old(cursorPosition)] == content[cursorPosition];
 	@ signals (RuntimeException) textBoxRenderer.contentChanged == false;
 	@ signals (RuntimeException) textBoxRenderer.showError == true;
+	@ assignable textBoxRenderer.contentChanged, textBoxRenderer.showError;
 	@
 	@ also
 	@
@@ -244,6 +237,7 @@ public class NumericTextBox
 	@ signals_only RuntimeException;
 	@ signals (RuntimeException) cursorPosition == \old(cursorPosition);
 	@ signals (RuntimeException) content[\old(cursorPosition)] == content[cursorPosition];
+	@ assignable \nothing;
 	@
 
 	@*/
@@ -259,8 +253,8 @@ public class NumericTextBox
 			}
 		}
 		else {
-			this.content[cursorPosition] = this.EMPTY;
 			this.cursorPosition--;
+			this.content[cursorPosition] = this.EMPTY;
 			if (this.textBoxRenderer != null) {
 				this.textBoxRenderer.contentChanged = true;
 			}
